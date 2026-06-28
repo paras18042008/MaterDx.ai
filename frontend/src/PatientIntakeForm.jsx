@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function PatientIntakeForm() {
+function PatientIntakeForm({ onComplete }) {
   const [formData, setFormData] = useState({
     name: "",
     age: "",
@@ -17,6 +17,9 @@ function PatientIntakeForm() {
     painScore: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -24,18 +27,27 @@ function PatientIntakeForm() {
     });
   };
 
+  //  THIS WILL CONNECT TO BACKEND LATER (SAFE PLACEHOLDER)
+const handleBeginAI = () => {
+  onComplete(formData);
+};
+
+
+  // ---------------- UI ----------------
   return (
     <div className="min-h-screen bg-slate-100 p-6">
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}
         <h1 className="text-3xl font-bold text-blue-600 mb-6">
-           MaterDx.ai
+          MaterDx.ai
         </h1>
 
         <h2 className="text-xl font-semibold mb-6">
           Patient Intake
         </h2>
+
+        
 
         {/* Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -163,8 +175,12 @@ function PatientIntakeForm() {
 
         {/* Button */}
         <div className="mt-6 text-center">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg">
-            Begin AI Consultation
+          <button
+            onClick={handleBeginAI}
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg"
+          >
+            {loading ? "Preparing AI..." : "Begin AI Consultation"}
           </button>
         </div>
 

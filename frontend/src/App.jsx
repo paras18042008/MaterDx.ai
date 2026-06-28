@@ -1,10 +1,29 @@
-import IntakeLoop from "./components/IntakeLoop";
+import { useState } from "react";
+import PatientIntakeForm from "./PatientIntakeForm";
+import AIConversation from "./AIConversation";
 
-export default function App() {
+function App() {
+  const [screen, setScreen] = useState("intake");
+  const [patientData, setPatientData] = useState(null);
+
+  const handleIntakeComplete = (data) => {
+    setPatientData(data);
+    setScreen("conversation");
+  };
+
+  if (screen === "intake") {
+    return (
+      <PatientIntakeForm
+        onComplete={handleIntakeComplete}
+      />
+    );
+  }
+
   return (
-    <div>
-      <h1 style={{ textAlign: "center" }}>MaterDx.ai</h1>
-      <IntakeLoop />
-    </div>
+    <AIConversation
+      patientProfile={patientData}
+    />
   );
 }
+
+export default App;
