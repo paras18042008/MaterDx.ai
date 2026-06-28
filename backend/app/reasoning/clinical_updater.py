@@ -1,5 +1,5 @@
 from app.reasoning.clinical_state import ClinicalState
-
+from app.reasoning.completeness_checker import get_missing_features
 
 def update_state(state: ClinicalState, extracted):
 
@@ -32,13 +32,7 @@ def update_state(state: ClinicalState, extracted):
             state.systems["gastrointestinal"] += 10
             state.systems["musculoskeletal"] += 15
 
-            state.missing_features.extend([
-                "duration",
-                "shortness_of_breath",
-                "sweating",
-                "nausea"
-            ])
-
+            
         radiation = symptom.get("radiation", "")
 
         if radiation:
@@ -62,9 +56,6 @@ def update_state(state: ClinicalState, extracted):
     else:
         state.risk = "LOW"
 
-    # Remove duplicate missing features
-    state.missing_features = list(
-        set(state.missing_features)
-    )
+    state.missing_features = get_missing_features(extracted)
 
     return state

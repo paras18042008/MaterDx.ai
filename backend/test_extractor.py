@@ -1,13 +1,10 @@
-from app.reasoning.feature_extractor import extract_features
-from app.reasoning.clinical_state import clinical_state
-from app.reasoning.clinical_updater import update_state
+from app.reasoning.clinical_state import ClinicalState
+from app.reasoning.question_planner import get_next_question
 
-state = clinical_state()
+state = ClinicalState()
 
-features = extract_features(
-    "I've had severe chest pain radiating to my left arm for two hours."
-)
+state.risk = "HIGH"
+state.systems["cardiac"] = 80
+state.missing_features = ["sweating", "nausea"]
 
-state = update_state(state, features)
-
-print(state.to_dict())
+print(get_next_question(state))
