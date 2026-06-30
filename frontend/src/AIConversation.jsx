@@ -25,8 +25,41 @@ function AIConversation({ patientProfile }) {
     setMessages(updatedMessages);
     setInput("");
 
-    // Backend call comes in next step.
-  };
+setMessages(updatedMessages);
+setInput("");
+
+try {
+  const response = await fetch("http://127.0.0.1:8000/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      session_id: "test1",
+      message: input,
+    }),
+  });
+
+  const data = await response.json();
+
+  setMessages((prev) => [
+    ...prev,
+    {
+      role: "assistant",
+      content: data.next_question || "No response from AI",
+    },
+  ]);
+} catch (error) {
+  console.error(error);
+
+  setMessages((prev) => [
+    ...prev,
+    {
+      role: "assistant",
+      content: "Unable to contact the server.",
+    },
+  ]);
+}  };
 
   return (
     <div className="min-h-screen bg-slate-100">

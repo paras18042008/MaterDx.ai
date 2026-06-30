@@ -16,8 +16,19 @@ class ChatRequest(BaseModel):
 app = FastAPI(title="MaterDx.ai API")
 session_store = {}
 
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 @app.post("/chat")
 async def chat(data: ChatRequest):
+    print("RECEIVED:", data)
     session_id = data.session_id
     message = data.message
 
