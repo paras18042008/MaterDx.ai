@@ -2,7 +2,8 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Any
 from app.reasoning.patient_context import PatientContext
 from app.reasoning.diagnostic_state import DiagnosticState
-
+from app.reasoning.evidence import Evidence
+from app.reasoning.clinical_state import ClinicalState
 
 @dataclass
 class ReasoningContext:
@@ -11,7 +12,7 @@ class ReasoningContext:
     patient_profile: Dict[str, Any] = field(default_factory=dict)
 
     # Current verified medical state
-    clinical_state: Any = None
+    clinical_state: ClinicalState = field(default_factory=ClinicalState)
 
     # Entire conversation
     conversation_history: List[Dict[str, str]] = field(default_factory=list)
@@ -43,11 +44,8 @@ class ReasoningContext:
     # Safety alerts
     safety_alerts: List[str] = field(default_factory=list)
 
-    # Long-term patient information
-    patient_context: PatientContext = field(default_factory=PatientContext)
+    patient: PatientContext = field(default_factory=PatientContext)
 
-    # AI diagnostic reasoning
-    diagnostic_state: DiagnosticState = field(default_factory=DiagnosticState)
+    diagnostic: DiagnosticState = field(default_factory=DiagnosticState)
 
-    # All structured evidence collected
-    evidence: List[Any] = field(default_factory=list)
+    evidence: List[Evidence] = field(default_factory=list)

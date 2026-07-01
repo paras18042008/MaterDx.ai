@@ -25,21 +25,9 @@ class ClinicalReasoner:
 
     def update_evidence(self, context):
 
-        extracted = context.extracted_features
-
-        symptoms = extracted.get("symptoms", [])
-
-        for symptom in symptoms:
-
-            ev = Evidence(
-            type="symptom",
-            name=symptom.get("name", ""),
-            value=symptom.get("severity", ""),
-            source="patient",
-            status="confirmed"
-            )
-
-            context.evidence.append(ev)
+    # Evidence has already been built by EvidenceBuilder.
+    # Future versions will merge evidence, resolve conflicts,
+    # update confidence, and validate incoming evidence.
 
         return context
 
@@ -74,10 +62,76 @@ class ClinicalReasoner:
         return context
 
     def assess_risk(self, context):
+
+        if not context.diagnostic.hypotheses:
+            context.clinical_state.risk = "UNKNOWN"
+            return context
+
+        top = max(
+            context.diagnostic.hypotheses,
+            key=lambda h: h.confidence
+        )
+
+        if top.name == "Acute Coronary Syndrome":
+
+            if top.confidence >= 0.80:
+                context.clinical_state.risk = "EMERGENCY"
+
+            elif top.confidence >= 0.60:
+                context.clinical_state.risk = "HIGH"
+
+            else:
+                context.clinical_state.risk = "MODERATE"
+
+        else:
+            context.clinical_state.risk = "LOW"
+
         return context
 
     def choose_next_question(self, context):
+
+        if not context.diagnostic.hypotheses:
+            return context
+
+        top = max(
+            context.diagnostic.hypotheses,
+            key=lambda h: h.confidence
+            )
+
+        if top.missing_evidence:
+
+            missing = top.missing_evidence[0]
+
+            questions = {
+            "shortness_of_breath": "Are you experiencing shortness of breath?",
+            "sweating": "Are you sweating?",
+            "ecg": "Have you had an ECG done?",
+            "troponin": "Has a troponin blood test been performed?"
+            }
+
+            context.diagnostic.next_question = questions.get(
+                missing,
+                f"Can you tell me more about {missing}?"
+            )
+
         return context
 
     def check_completion(self, context):
+
+        if not context.diagnostic.hypotheses:
+            return context
+
+        top = max(
+            context.diagnostic.hypotheses,
+            key=lambda h: h.confidence
+        )
+
+        if (
+            top.confidence >= 0.90
+            and len(top.missing_evidence) == 0
+        ):
+            context.diagnostic.ready_for_report = True
+        else:
+            context.diagnostic.ready_for_report = False
+
         return context
