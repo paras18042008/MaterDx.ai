@@ -1,0 +1,25 @@
+{
+  "answered_previous_question": false,
+
+  "confidence": 0.0,
+
+  "needs_clarification": false,
+
+  "clarification_reason": "",
+
+  "new_evidence": [],
+
+  "negated_evidence": [],
+
+  "uncertain_evidence": [],
+
+  "corrections": [],
+
+  "conversation_summary_update": "",
+
+  "reason_for_visit": "",
+
+  "patient_intent": "",
+
+  "emergency_signals": []
+}

@@ -1,53 +1,39 @@
 from app.reasoning.evidence import Evidence
 
-
 class EvidenceBuilder:
 
-    def build(self, extracted):
+    def build(self, raw_evidence):
 
         evidence = []
 
-        # -----------------------------
-        # Symptoms
-        # -----------------------------
-        for symptom in extracted.get("symptoms", []):
+        if not isinstance(raw_evidence, list):
+            return evidence
 
-            evidence.append(
-                Evidence(
-                    type="symptom",
-                    name=symptom.get("name", ""),
-                    value=symptom.get("severity", ""),
-                    source="patient",
-                    status="confirmed"
-                )
+        for item in raw_evidence:
+
+            if not isinstance(item, dict):
+                continue
+
+            ev = Evidence(
+                type=item.get("type", ""),
+                name=item.get("name", ""),
+                value=item.get("value"),
+                unit=item.get("unit"),
+                severity=item.get("severity"),
+                duration=item.get("duration"),
+                onset=item.get("onset"),
+                location=item.get("location"),
+                radiation=item.get("radiation"),
+                progression=item.get("progression"),
+                aggravating_factors=item.get("aggravating_factors", []),
+                relieving_factors=item.get("relieving_factors", []),
+                associated_features=item.get("associated_features", []),
+                confidence=item.get("confidence", 1.0),
+                source=item.get("source", "patient"),
+                status=item.get("status", "confirmed"),
+                notes=item.get("notes", "")
             )
 
-        # -----------------------------
-        # Negative symptoms
-        # -----------------------------
-        for symptom in extracted.get("negatives", []):
-
-            evidence.append(
-                Evidence(
-                    type="symptom",
-                    name=symptom,
-                    source="patient",
-                    status="denied"
-                )
-            )
-
-        # -----------------------------
-        # Red flags
-        # -----------------------------
-        for flag in extracted.get("red_flags", []):
-
-            evidence.append(
-                Evidence(
-                    type="red_flag",
-                    name=flag,
-                    source="patient",
-                    status="confirmed"
-                )
-            )
+            evidence.append(ev)
 
         return evidence

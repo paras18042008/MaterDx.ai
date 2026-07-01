@@ -7,17 +7,16 @@ class ReasoningPipeline:
     def __init__(self):
 
         self.builder = EvidenceBuilder()
-
         self.reasoner = ClinicalReasoner()
 
     def process(self, context):
 
-        # Build standardized evidence
+        # Build standardized evidence from LLM output
         context.evidence = self.builder.build(
-            context.extracted_features
+            context.interpreted_reply.get("new_evidence", [])
         )
 
-        # Run the reasoning engine
+        # Run reasoning engine
         context = self.reasoner.process(context)
 
         return context

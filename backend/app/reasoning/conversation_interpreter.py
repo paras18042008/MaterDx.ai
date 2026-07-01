@@ -1,63 +1,99 @@
+import json
+
 from app.llm.ollama_client import chat
+from app.reasoning.reasoning_context import ReasoningContext
 
 
 SYSTEM_PROMPT = """
-You are the Conversation Interpreter for MaterDx.
+You are the Clinical Language Interpreter for MaterDx.
 
-Your ONLY job is to understand the patient's latest reply in the context of the previous question.
+Your ONLY job is to convert patient language into structured medical evidence.
 
-Return ONLY valid JSON.
+RULES:
+- Never diagnose
+- Never assess risk
+- Never suggest treatment
+- Never suggest tests
+- Never ask questions
 
-Never explain.
+OUTPUT MUST BE VALID JSON ONLY.
 
-Never use markdown.
-
-Output format:
+SCHEMA:
 
 {
-    "answered_question":"",
-    "answer_type":"",
-    "value":"",
-    "confidence":0.0,
-    "needs_clarification":false,
-    "clarification_reason":""
+  "new_evidence": [
+    {
+      "type": "symptom",
+      "name": "",
+      "severity": "",
+      "duration": "",
+      "onset": "",
+      "location": "",
+      "radiation": "",
+      "confidence": 0.0
+    }
+  ],
+  "negated_evidence": [],
+  "uncertain_evidence": [],
+  "confidence": 0.0
 }
 
-Rules:
+If no evidence is found, return empty lists.
 
-- answer_type can ONLY be:
-    yes
-    no
-    value
-    uncertain
-    unrelated
-
-- confidence must be between 0 and 1.
-
-- If the reply clearly answers the previous question,
-confidence should be high.
-
-- If unsure, return needs_clarification=true.
-
-Return JSON only.
+Return ONLY JSON.
 """
 
 
-def interpret_reply(previous_question, user_reply):
-    prompt = f"""
+class ConversationInterpreter:
+
+    def __init__(self):
+        self.model = "llama3"
+
+    def build_prompt(self, context: ReasoningContext):
+
+        return f"""
 Previous Question:
-{previous_question}
+{context.last_question}
 
-Patient Reply:
-{user_reply}
+Conversation History:
+{context.conversation_history}
+
+Patient Message:
+{context.current_message}
+
+Return valid JSON only.
 """
 
-    response = chat(
-        model="llama3",
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": prompt},
-        ],
-    )
+    def interpret(self, context: ReasoningContext):
 
-    return response["message"]["content"]
+        prompt = self.build_prompt(context)
+
+        response = chat(
+            model=self.model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT,
+                },
+                {
+                    "role": "user",
+                    "content": prompt,
+                },
+            ],
+        )
+
+        text = response["message"]["content"]
+
+        try:
+            return json.loads(text)
+
+        except Exception:
+
+            return {
+                "new_evidence": [],
+                "negated_evidence": [],
+                "uncertain_evidence": [],
+                "confidence": 0.0,
+                "error": "invalid_json",
+                "raw_response": text,
+            }
