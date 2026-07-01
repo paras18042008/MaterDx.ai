@@ -1,0 +1,55 @@
+from dataclasses import dataclass, field
+from typing import Any, List, Optional
+from datetime import datetime
+
+
+@dataclass
+class TrackedField:
+    value: Any = None
+    confidence: float = 1.0
+    last_updated: Optional[datetime] = None
+
+
+@dataclass
+class PatientContext:
+
+    # ---------- Identity ----------
+    patient_id: str = ""
+
+    # ---------- Demographics ----------
+    age: TrackedField = field(default_factory=TrackedField)
+    sex_at_birth: TrackedField = field(default_factory=TrackedField)
+    gender: TrackedField = field(default_factory=TrackedField)
+    language: TrackedField = field(default_factory=TrackedField)
+    country: TrackedField = field(default_factory=TrackedField)
+
+    # ---------- Anthropometrics ----------
+    height_cm: TrackedField = field(default_factory=TrackedField)
+    weight_kg: TrackedField = field(default_factory=TrackedField)
+
+    # ---------- Biological ----------
+    pregnancy: TrackedField = field(default_factory=TrackedField)
+    gestational_age_weeks: TrackedField = field(default_factory=TrackedField)
+    last_menstrual_period: TrackedField = field(default_factory=TrackedField)
+    menopause: TrackedField = field(default_factory=TrackedField)
+    blood_group: TrackedField = field(default_factory=TrackedField)
+
+    # ---------- Lifestyle ----------
+    smoking: TrackedField = field(default_factory=TrackedField)
+    alcohol: TrackedField = field(default_factory=TrackedField)
+    recreational_drugs: TrackedField = field(default_factory=TrackedField)
+    occupation: TrackedField = field(default_factory=TrackedField)
+    exercise_level: TrackedField = field(default_factory=TrackedField)
+    diet: TrackedField = field(default_factory=TrackedField)
+
+    # ---------- Medical Background ----------
+    chronic_conditions: List[str] = field(default_factory=list)
+    surgeries: List[str] = field(default_factory=list)
+    medications: List[str] = field(default_factory=list)
+    allergies: List[str] = field(default_factory=list)
+
+    # ---------- Family History ----------
+    family_history: List[str] = field(default_factory=list)
+
+    # ---------- Social ----------
+    travel_history: List[str] = field(default_factory=list)
