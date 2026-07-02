@@ -1,15 +1,18 @@
 from app.reasoning.reasoning_context import ReasoningContext
-from app.reasoning.evidence import Evidence
-from app.reasoning.diagnostic_state import DiagnosisHypothesis
+from app.reasoning.hypothesis_generator import HypothesisGenerator
+
 
 class ClinicalReasoner:
+
+    def __init__(self):
+        self.hypothesis_generator = HypothesisGenerator()
 
     def process(self, context: ReasoningContext) -> ReasoningContext:
 
         # 1. Interpret new evidence
         context = self.update_evidence(context)
 
-        # 2. Update differential diagnosis
+        # 2. Generate differential diagnosis
         context = self.update_hypotheses(context)
 
         # 3. Assess danger
@@ -25,39 +28,19 @@ class ClinicalReasoner:
 
     def update_evidence(self, context):
 
-    # Evidence has already been built by EvidenceBuilder.
-    # Future versions will merge evidence, resolve conflicts,
-    # update confidence, and validate incoming evidence.
+        # Evidence has already been built by EvidenceBuilder.
+        # Future versions will merge evidence, resolve conflicts,
+        # update confidence, and validate incoming evidence.
 
         return context
 
     def update_hypotheses(self, context):
 
-        symptom_names = [
-            e.name.lower()
-            for e in context.evidence
-            if e.type == "symptom"
-        ]
-
-        hypotheses = []
-
-        if "chest pain" in symptom_names:
-
-            hypotheses.append(
-                DiagnosisHypothesis(
-                    name="Acute Coronary Syndrome",
-                    confidence=0.70,
-                    supporting_evidence=["chest pain"],
-                    missing_evidence=[
-                    "shortness of breath",
-                    "sweating",
-                    "ecg",
-                    "troponin"
-                    ]
-                )
+        context.diagnostic.hypotheses = (
+            self.hypothesis_generator.generate(
+                context.evidence
             )
-
-        context.diagnostic.hypotheses = hypotheses
+        )
 
         return context
 
@@ -91,22 +74,23 @@ class ClinicalReasoner:
     def choose_next_question(self, context):
 
         if not context.diagnostic.hypotheses:
+            context.diagnostic.next_question = ""
             return context
 
         top = max(
             context.diagnostic.hypotheses,
             key=lambda h: h.confidence
-            )
+        )
 
         if top.missing_evidence:
 
             missing = top.missing_evidence[0]
 
             questions = {
-            "shortness_of_breath": "Are you experiencing shortness of breath?",
-            "sweating": "Are you sweating?",
-            "ecg": "Have you had an ECG done?",
-            "troponin": "Has a troponin blood test been performed?"
+                "shortness of breath": "Are you experiencing shortness of breath?",
+                "sweating": "Are you sweating?",
+                "ecg": "Have you had an ECG done?",
+                "troponin": "Has a troponin blood test been performed?",
             }
 
             context.diagnostic.next_question = questions.get(
@@ -126,12 +110,9 @@ class ClinicalReasoner:
             key=lambda h: h.confidence
         )
 
-        if (
+        context.diagnostic.ready_for_report = (
             top.confidence >= 0.90
             and len(top.missing_evidence) == 0
-        ):
-            context.diagnostic.ready_for_report = True
-        else:
-            context.diagnostic.ready_for_report = False
+        )
 
         return context

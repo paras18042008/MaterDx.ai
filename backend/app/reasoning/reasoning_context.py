@@ -26,9 +26,6 @@ class ReasoningContext:
     # Latest user message
     current_message: str = ""
 
-    # Facts extracted this turn
-    extracted_features: Dict[str, Any] = field(default_factory=dict)
-
     # Conversation interpretation
     interpreted_reply: Dict[str, Any] = field(default_factory=dict)
 

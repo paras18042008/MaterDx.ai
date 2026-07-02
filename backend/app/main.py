@@ -5,7 +5,6 @@ from pydantic import BaseModel
 from app.api.routes import router
 from app.api.classify import router as classify_router
 
-from app.reasoning.feature_extractor import extract_features
 from app.reasoning.reasoning_context import ReasoningContext
 from app.reasoning.reasoning_pipeline import ReasoningPipeline
 
@@ -64,7 +63,6 @@ async def chat(data: ChatRequest):
         }
     )
 
-    context.extracted_features = extract_features(message)
 
     context.interpreted_reply = interpreter.interpret(context)
     print(context.interpreted_reply)
