@@ -53,3 +53,18 @@ class PatientContext:
 
     # ---------- Social ----------
     travel_history: List[str] = field(default_factory=list)
+
+        # ---------- Conversation ----------
+    conversation_history: List[dict] = field(default_factory=list)
+    last_question: str = ""
+
+    # ---------- Agent Outputs ----------
+    interpreter_output: dict = field(default_factory=dict)
+    doctor_output: dict = field(default_factory=dict)
+    critic_output: dict = field(default_factory=dict)
+    judge_output: dict = field(default_factory=dict)
+
+    # ---------- Interpreter Metadata ----------
+    missing_information: List[str] = field(default_factory=list)
+    ambiguities: List[str] = field(default_factory=list)
+    interpreter_confidence: float = 0.0

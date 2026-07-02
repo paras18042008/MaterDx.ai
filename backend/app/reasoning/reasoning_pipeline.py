@@ -1,22 +1,45 @@
-from app.reasoning.evidence_builder import EvidenceBuilder
-from app.reasoning.clinical_reasoner import ClinicalReasoner
+from app.agents.conversation_interpreter import ConversationInterpreter
+from app.agents.evidence_builder import EvidenceBuilder
+from app.agents.doctor_agent import DoctorAgent
+from app.agents.critic_agent import CriticAgent
+from app.agents.judge_agent import JudgeAgent
 
 
 class ReasoningPipeline:
 
     def __init__(self):
 
+        self.interpreter = ConversationInterpreter()
         self.builder = EvidenceBuilder()
-        self.reasoner = ClinicalReasoner()
+        self.doctor = DoctorAgent()
+        self.critic = CriticAgent()
+        self.judge = JudgeAgent()
 
-    def process(self, context):
+    def run(
+        self,
+        patient_context,
+        patient_message,
+    ):
 
-        # Build standardized evidence from LLM output
-        context.evidence = self.builder.build(
-            context.interpreted_reply.get("new_evidence", [])
+        patient_context = self.interpreter.run(
+            patient_context,
+            patient_message,
         )
 
-        # Run reasoning engine
-        context = self.reasoner.process(context)
+        patient_context = self.builder.run(
+            patient_context,
+        )
 
-        return context
+        patient_context = self.doctor.run(
+            patient_context,
+        )
+
+        patient_context = self.critic.run(
+            patient_context,
+        )
+
+        patient_context = self.judge.run(
+            patient_context,
+        )
+
+        return patient_context

@@ -1,44 +1,116 @@
 import json
 
 from app.llm.ollama_client import chat
-from app.reasoning.reasoning_context import ReasoningContext
 
 
 SYSTEM_PROMPT = """
-You are the Clinical Language Interpreter for MaterDx.
+You are the Conversation Interpreter Agent for MaterDx (MD*A).
 
-Your ONLY job is to convert patient language into structured medical evidence.
+You are NOT a doctor.
 
-RULES:
-- Never diagnose
-- Never assess risk
-- Never suggest treatment
-- Never suggest tests
-- Never ask questions
+Your ONLY responsibility is to convert the patient's latest message into structured clinical information.
 
-OUTPUT MUST BE VALID JSON ONLY.
+IMPORTANT PRINCIPLES
 
-SCHEMA:
+- Extract EVERY clinically relevant fact.
+- Never diagnose.
+- Never estimate disease probability.
+- Never assess risk.
+- Never recommend treatment.
+- Never recommend investigations.
+- Never ask questions.
+- Never invent information.
+- Never hallucinate.
+- Preserve uncertainty instead of guessing.
+- Extract ONLY NEW information relative to the supplied Patient Context.
+- If information already exists in Patient Context, do not repeat it.
+- Return ONLY valid JSON.
+
+SCHEMA
 
 {
-  "new_evidence": [
-    {
-      "type": "symptom",
-      "name": "",
-      "severity": "",
-      "duration": "",
-      "onset": "",
-      "location": "",
-      "radiation": "",
-      "confidence": 0.0
-    }
-  ],
-  "negated_evidence": [],
-  "uncertain_evidence": [],
-  "confidence": 0.0
+    "new_information": {
+
+        "demographics": {},
+
+        "chief_complaint": {},
+
+        "symptoms": [],
+
+        "signs": [],
+
+        "vitals": [],
+
+        "medications": [],
+
+        "allergies": [],
+
+        "past_medical_history": [],
+
+        "surgical_history": [],
+
+        "family_history": [],
+
+        "social_history": [],
+
+        "occupational_history": [],
+
+        "travel_history": [],
+
+        "lifestyle": [],
+
+        "menstrual_history": {},
+
+        "pregnancy_history": {},
+
+        "immunizations": [],
+
+        "devices": [],
+
+        "lab_results": [],
+
+        "imaging": [],
+
+        "procedures": [],
+
+        "risk_factors": [],
+
+        "red_flags": [],
+
+        "negated_findings": [],
+
+        "uncertain_findings": [],
+
+        "timeline": []
+
+    },
+
+    "confidence": 0.0,
+
+    "missing_information": [],
+
+    "ambiguities": []
 }
 
-If no evidence is found, return empty lists.
+Every symptom should preserve as much structure as possible.
+
+Example:
+
+{
+    "name": "Chest pain",
+    "severity": "Severe",
+    "onset": "Sudden",
+    "duration": "3 hours",
+    "frequency": "Constant",
+    "location": "Central chest",
+    "radiation": "Left arm",
+    "quality": "Pressure",
+    "progression": "Worsening",
+    "aggravating_factors": [],
+    "relieving_factors": [],
+    "associated_features": [],
+    "confidence": 0.98
+}
 
 Return ONLY JSON.
 """
@@ -47,26 +119,43 @@ Return ONLY JSON.
 class ConversationInterpreter:
 
     def __init__(self):
-        self.model = "llama3"
 
-    def build_prompt(self, context: ReasoningContext):
+        self.model = "qwen3"
+
+    def build_prompt(
+        self,
+        patient_context,
+        patient_message,
+    ):
 
         return f"""
-Previous Question:
-{context.last_question}
+PATIENT CONTEXT
 
-Conversation History:
-{context.conversation_history}
+{patient_context}
 
-Patient Message:
-{context.current_message}
+------------------------------------
 
-Return valid JSON only.
+LATEST PATIENT MESSAGE
+
+{patient_message}
+
+------------------------------------
+
+Extract ONLY NEW clinically relevant information.
+
+Return ONLY valid JSON.
 """
 
-    def interpret(self, context: ReasoningContext):
+    def run(
+        self,
+        patient_context,
+        patient_message,
+    ):
 
-        prompt = self.build_prompt(context)
+        prompt = self.build_prompt(
+            patient_context,
+            patient_message,
+        )
 
         response = chat(
             model=self.model,
@@ -85,15 +174,24 @@ Return valid JSON only.
         text = response["message"]["content"]
 
         try:
-            return json.loads(text)
+
+            patient_context.interpreter_output = json.loads(text)
 
         except Exception:
 
-            return {
-                "new_evidence": [],
-                "negated_evidence": [],
-                "uncertain_evidence": [],
+            patient_context.interpreter_output = {
+
+                "new_information": {},
+
                 "confidence": 0.0,
+
+                "missing_information": [],
+
+                "ambiguities": [],
+
                 "error": "invalid_json",
+
                 "raw_response": text,
             }
+
+        return patient_context
