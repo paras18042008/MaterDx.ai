@@ -21,11 +21,26 @@ class EvidenceBuilder:
             if not value:
                 continue
 
-            setattr(
-                patient_context,
-                key,
-                value,
-            )
+            current = getattr(patient_context, key, None)
+
+    # Dictionary fields
+            if isinstance(current, dict) and isinstance(value, dict):
+
+                current.update(value)
+
+    # List fields
+            elif isinstance(current, list) and isinstance(value, list):
+
+                current.extend(value)
+
+    # Primitive fields
+            else:
+
+                setattr(
+                    patient_context,
+                    key,
+                    value,
+        )
 
         patient_context.missing_information = interpreter_output.get(
             "missing_information",

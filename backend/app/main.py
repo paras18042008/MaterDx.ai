@@ -47,6 +47,17 @@ async def chat(data: ChatRequest):
         message,
     )
 
+    # ------------------------------------
+    # Remember the last question asked by the Judge.
+    # This allows the Conversation Interpreter to
+    # correctly interpret short replies such as
+    # "Yes", "No", "Since yesterday", etc.
+    # ------------------------------------
+    patient_context.last_question = patient_context.judge_output.get(
+        "next_question",
+        "",
+    )
+
     session_store[session_id] = patient_context
 
     print(patient_context)

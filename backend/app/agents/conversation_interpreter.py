@@ -4,11 +4,11 @@ from app.llm.ollama_client import chat
 
 
 SYSTEM_PROMPT = """
-You are the Conversation Interpreter Agent for MaterDx (MD*A).
+You are the Conversation Interpreter Agent for MaterDx (MD.v1).
 
 You are NOT a doctor.
 
-Your ONLY responsibility is to convert the patient's latest message into structured clinical information.
+Your ONLY responsibility is to convert the patient's latest response into structured clinical information.
 
 IMPORTANT PRINCIPLES
 
@@ -24,6 +24,8 @@ IMPORTANT PRINCIPLES
 - Preserve uncertainty instead of guessing.
 - Extract ONLY NEW information relative to the supplied Patient Context.
 - If information already exists in Patient Context, do not repeat it.
+- The patient's latest response MUST ALWAYS be interpreted together with the Previous Question.
+- Many responses such as "Yes", "No", "Sometimes", "Since yesterday", "Only while walking", or "Not anymore" are incomplete on their own. Use the Previous Question to determine exactly what clinical information those responses refer to.
 - Return ONLY valid JSON.
 
 SCHEMA
@@ -135,11 +137,19 @@ PATIENT CONTEXT
 
 ------------------------------------
 
-LATEST PATIENT MESSAGE
+PREVIOUS QUESTION ASKED TO THE PATIENT
+
+{patient_context.last_question}
+
+------------------------------------
+
+LATEST PATIENT RESPONSE
 
 {patient_message}
 
 ------------------------------------
+
+Interpret the patient's response in the context of the Previous Question.
 
 Extract ONLY NEW clinically relevant information.
 
