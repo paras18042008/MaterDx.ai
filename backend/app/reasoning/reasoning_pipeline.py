@@ -15,31 +15,32 @@ class ReasoningPipeline:
         self.critic = CriticAgent()
         self.judge = JudgeAgent()
 
-    def run(
-        self,
-        patient_context,
-        patient_message,
-    ):
+    def run(self, patient_context, patient_message):
 
         patient_context = self.interpreter.run(
             patient_context,
             patient_message,
-        )
+    )
+        print("Interpreter:", patient_context)
 
         patient_context = self.builder.run(
             patient_context,
-        )
+    )
+        print("Builder:", patient_context)
 
         patient_context = self.doctor.run(
             patient_context,
-        )
+    )
+        print("Doctor:", patient_context)
 
         patient_context = self.critic.run(
             patient_context,
-        )
+    )
+        print("Critic:", patient_context)
 
         patient_context = self.judge.run(
             patient_context,
-        )
+    )
+        print("Judge:", patient_context)
 
         return patient_context

@@ -49,6 +49,9 @@ async def chat(data: ChatRequest):
 
     session_store[session_id] = patient_context
 
+    print(patient_context)
+    print(type(patient_context))
+
     return patient_context.judge_output
 
 

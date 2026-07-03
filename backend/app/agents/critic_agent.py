@@ -53,7 +53,7 @@ class CriticAgent:
 
     def __init__(self):
 
-        self.model = "deepseek-r1"
+        self.model = "llama3"
 
     def build_prompt(
         self,

@@ -120,7 +120,7 @@ class ConversationInterpreter:
 
     def __init__(self):
 
-        self.model = "qwen3"
+        self.model = "llama3"
 
     def build_prompt(
         self,
