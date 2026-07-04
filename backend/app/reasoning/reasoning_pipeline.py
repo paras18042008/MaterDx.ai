@@ -20,9 +20,12 @@ class ReasoningPipeline:
         patient_context = self.interpreter.run(
             patient_context,
             patient_message,
-    )
-        print("Interpreter:", patient_context)
+        )
 
+        print("\n================ INTERPRETER OUTPUT ================\n")
+        print(patient_context.interpreter_output)
+        print("\n====================================================\n")
+        
         patient_context = self.builder.run(
             patient_context,
     )
