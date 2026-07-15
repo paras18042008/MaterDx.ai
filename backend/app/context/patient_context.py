@@ -11,7 +11,7 @@ class PatientContext:
     age: int | None = None
     sex: str | None = None
 
-    # Main complaint
+    # Main complaintt
     chief_complaint: str = ""
 
     # Structured evidence
