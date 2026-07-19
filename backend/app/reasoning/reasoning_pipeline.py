@@ -29,6 +29,21 @@ class ReasoningPipeline:
         patient_context = self.builder.run(
             patient_context,
     )
+        print("\n========== PATIENT CONTEXT ==========\n")
+
+        print("Chief Complaint:")
+        print(patient_context.chief_complaint)
+
+        print("\nSymptoms:")
+        print(patient_context.symptoms)
+
+        print("\nVitals:")
+        print(patient_context.vitals)
+
+        print("\nPast Medical History:")
+        print(patient_context.past_medical_history)
+
+        print("\n=====================================\n")
         print("Builder:", patient_context)
 
         patient_context = self.doctor.run(

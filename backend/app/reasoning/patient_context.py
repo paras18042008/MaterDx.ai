@@ -69,52 +69,52 @@ class PatientContext:
     ambiguities: List[str] = field(default_factory=list)
     interpreter_confidence: float = 0.0
 
-    # ---------- Current Consultation ----------
+        # ---------- Current Consultation ----------
 
-demographics: dict = field(default_factory=dict)
+    demographics: dict = field(default_factory=dict)
 
-chief_complaint: dict = field(default_factory=dict)
+    chief_complaint: List[dict] = field(default_factory=list)
 
-symptoms: List[dict] = field(default_factory=list)
+    symptoms: List[dict] = field(default_factory=list)
 
-signs: List[dict] = field(default_factory=list)
+    signs: List[dict] = field(default_factory=list)
 
-vitals: List[dict] = field(default_factory=list)
+    vitals: List[dict] = field(default_factory=list)
 
-past_medical_history: List[dict] = field(default_factory=list)
+    past_medical_history: List[dict] = field(default_factory=list)
 
-surgical_history: List[dict] = field(default_factory=list)
+    surgical_history: List[dict] = field(default_factory=list)
 
-family_history_structured: List[dict] = field(default_factory=list)
+    family_history_structured: List[dict] = field(default_factory=list)
 
-social_history: List[dict] = field(default_factory=list)
+    social_history: List[dict] = field(default_factory=list)
 
-occupational_history: List[dict] = field(default_factory=list)
+    occupational_history: List[dict] = field(default_factory=list)
 
-travel_history_structured: List[dict] = field(default_factory=list)
+    travel_history_structured: List[dict] = field(default_factory=list)
 
-lifestyle: List[dict] = field(default_factory=list)
+    lifestyle: List[dict] = field(default_factory=list)
 
-menstrual_history: dict = field(default_factory=dict)
+    menstrual_history: dict = field(default_factory=dict)
 
-pregnancy_history: dict = field(default_factory=dict)
+    pregnancy_history: dict = field(default_factory=dict)
 
-immunizations: List[dict] = field(default_factory=list)
+    immunizations: List[dict] = field(default_factory=list)
 
-devices: List[dict] = field(default_factory=list)
+    devices: List[dict] = field(default_factory=list)
 
-lab_results: List[dict] = field(default_factory=list)
+    lab_results: List[dict] = field(default_factory=list)
 
-imaging: List[dict] = field(default_factory=list)
+    imaging: List[dict] = field(default_factory=list)
 
-procedures: List[dict] = field(default_factory=list)
+    procedures: List[dict] = field(default_factory=list)
 
-risk_factors: List[dict] = field(default_factory=list)
+    risk_factors: List[dict] = field(default_factory=list)
 
-red_flags: List[dict] = field(default_factory=list)
+    red_flags: List[dict] = field(default_factory=list)
 
-negated_findings: List[dict] = field(default_factory=list)
+    negated_findings: List[dict] = field(default_factory=list)
 
-uncertain_findings: List[dict] = field(default_factory=list)
+    uncertain_findings: List[dict] = field(default_factory=list)
 
-timeline: List[dict] = field(default_factory=list)
+    timeline: List[dict] = field(default_factory=list)

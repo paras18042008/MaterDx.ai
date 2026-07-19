@@ -16,7 +16,8 @@ RULES:
 - Never suggest treatment
 - Never suggest tests
 - Never ask questions
-
+ 
+git push
 OUTPUT MUST BE VALID JSON ONLY.
 
 SCHEMA:
